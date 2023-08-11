@@ -1,104 +1,137 @@
 <template>
-  <div class="box">
-    <el-card class="box-card" shadow="always">
+  <div class="heart-container" @click="handleClick">
+      <transition-group name="fade">
+          <div v-for="(heart, index) in hearts" :key="index" class="heart" :style="heart.style">
+              {{ heart.text }}
+          </div>
+      </transition-group>
 
-      <div class="middle">
-        <p class="middle-title">SHNU</p>
+      <div class="box">
+          <el-card class="box-card" shadow="always">
+
+              <div class="middle">
+                  <p class="middle-title">SHNU</p>
+              </div>
+
+              <div class="card-content">
+
+                  <div class="input-container">
+                      <el-icon :size="21" class="input-icon">
+                          <Message />
+                      </el-icon>
+                      <input type="text" class="custom-input" placeholder="Emai address">
+                  </div>
+
+                  <div class="input-container">
+                      <el-icon :size="21" class="input-icon">
+                          <Lock />
+                      </el-icon>
+                      <input type="password" class="custom-input" placeholder="Password">
+                  </div>
+
+                  <div class="input-container">
+                      <el-icon :size="21" class="input-icon">
+                          <el-icon>
+                              <Avatar />
+                          </el-icon>
+                      </el-icon>
+                      <input type="text" class="custom-input" placeholder="管理员ID(没有请忽略)">
+                  </div>
+
+              </div>
+
+              <div class="card-footer">
+                  <el-button plain @click="login" link class="card-button">LET'S GO</el-button>
+                  <div class="forget-password">
+                      <el-link :underline="false" href="https://element-plus.org" target="_blank">Forgot
+                          Password?</el-link>
+                  </div>
+              </div>
+
+          </el-card>
+          <el-card class="box-card-header" shadow="always">
+              <h4 class="card-title">Login</h4>
+
+              <div class="icon-position">
+                  <div class="icon-box">
+                      <el-icon :size="15" class="icon">
+                          <Promotion />
+                      </el-icon>
+                  </div>
+
+                  <div class="icon-box">
+                      <el-icon :size="15" class="icon">
+                          <Comment />
+                      </el-icon>
+                  </div>
+
+                  <div class="icon-box">
+                      <el-icon :size="15" class="icon">
+                          <ChromeFilled />
+                      </el-icon>
+                  </div>
+
+              </div>
+
+
+          </el-card>
       </div>
-
-      <div class="card-content">
-
-        <div class="input-container">
-          <el-icon :size="21" class="input-icon">
-            <Message />
-          </el-icon>
-          <input type="text" class="custom-input" placeholder="Emai address">
-        </div>
-
-        <div class="input-container">
-          <el-icon :size="21" class="input-icon">
-            <Lock />
-          </el-icon>
-          <input type="password" class="custom-input" placeholder="Password">
-        </div>
-
-        <div class="input-container">
-          <el-icon :size="21" class="input-icon">
-            <el-icon>
-              <Avatar />
-            </el-icon>
-          </el-icon>
-          <input type="text" class="custom-input" placeholder="管理员ID(没有请忽略)">
-        </div>
-
-      </div>
-
-      <div class="card-footer">
-        <el-button link class="card-button">LET'S GO</el-button>
-        <div class="forget-password">
-          <el-link :underline="false" href="https://element-plus.org" target="_blank">Forgot Password?</el-link>
-        </div>
-      </div>
-
-    </el-card>
-    <el-card class="box-card-header" shadow="always">
-      <h4 class="card-title">Login</h4>
-
-      <div class="icon-position">
-        <div class="icon-box">
-          <el-icon :size="15" class="icon">
-            <Promotion />
-          </el-icon>
-        </div>
-
-        <div class="icon-box">
-          <el-icon :size="15" class="icon">
-            <Comment />
-          </el-icon>
-        </div>
-
-        <div class="icon-box">
-          <el-icon :size="15" class="icon">
-            <ChromeFilled />
-          </el-icon>
-        </div>
-
-      </div>
-
-
-    </el-card>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref } from 'vue';
-import { Search } from '@element-plus/icons-vue'
-const input1 = ref('');
-const password = ref('');
+<script lang="ts" setup>
+import { ElNotification } from 'element-plus'
+import { ref } from 'vue';
+
+const hearts = ref([]);
 
 
-export default defineComponent({
-  name: 'Login',
-  setup() {
-    const username = ref('');
-    const password = ref('');
+const handleClick = (e) => {
+  const x = e.pageX;
+  const y = e.pageY;
+  const randomColor = getRandomColorCode();
 
-    const login = () => {
-      // Simulate a login process
-      if (username.value === 'user' && password.value === 'password') {
-        alert('Login successful');
-      } else {
-        alert('Invalid credentials');
-      }
-    };
+  const newHeart = {
+      text: "❤",
+      style: {
+          top: `${y - 18}px`,
+          left: `${x - 6}px`,
+          color: randomColor,
+          opacity: 1, // 初始透明度为1，可见
+          transform: 'scale(1.1)', // 固定大小为原尺寸
+      },
+  };
 
-    return {
-      username,
-      password,
-      login
-    };
+  hearts.value.push(newHeart);
+  setTimeout(() => {
+      newHeart.style.opacity = 0; // 4秒后透明度变为0，消失
+  }, 2500); // 4秒后自动移除
+
+  setTimeout(() => {
+      hearts.value = hearts.value.filter(heart => heart !== newHeart);
+  }, 2500); // 4秒后移除小爱心
+};
+
+function getRandomColorCode() {
+  const allType = "0,1,2,3,4,5,6,7,8,9,a,b,c,d,e,f";
+  const allTypeArr = allType.split(",");
+  let color = "#";
+  for (let i = 0; i < 6; i++) {
+      const random = Math.floor(Math.random() * allTypeArr.length);
+      color += allTypeArr[random];
   }
-});
+  return color;
+}
+
+const login = () => {
+  ElNotification({
+      title: 'Success',
+      message: '登陆成功！',
+      type: 'success',
+      offset: -8,
+  })
+}
+
 </script>
 
 <style scoped>
@@ -135,6 +168,10 @@ export default defineComponent({
   color: #FFFFFF;
   font-size: 130%;
   text-align: center;
+  user-select: none;
+  /* 防止文本选中 */
+  cursor: default;
+  /* 鼠标悬停时不显示光标 */
 }
 
 
@@ -175,6 +212,10 @@ export default defineComponent({
 .middle-title {
   font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
   font-size: larger;
+  user-select: none;
+  /* 防止文本选中 */
+  cursor: default;
+  /* 鼠标悬停时不显示光标 */
 }
 
 .card-content {
@@ -254,4 +295,47 @@ export default defineComponent({
 .forget-password {
   margin-left: auto;
   /* 将左侧空间推向最大，使其靠右显示 */
-}</style>
+}
+
+.heart-container {
+  position: relative;
+  height: 100vh;
+}
+
+.heart {
+  position: absolute;
+  z-index: 9999999;
+  user-select: none;
+  animation: floatUp 2s forwards;
+}
+
+@keyframes remove {
+  100% {
+      opacity: 0;
+  }
+}
+
+@keyframes floatUp {
+  from {
+      transform: translateY(0);
+      opacity: 1;
+  }
+
+  to {
+      transform: translateY(-100px);
+      opacity: 0;
+  }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+  /* 设置过渡时间 */
+}
+
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+  /* 进入前和离开后的初始状态 */
+}
+</style>
